@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Services;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Api.Controllers
 {
@@ -19,12 +23,20 @@ namespace Api.Controllers
         {
             return Ok(new[] { "value1", "value2" });
         }
+        
+        [HttpPost("add")]
+        public async Task<ActionResult<IEnumerable<string>>> AddService()
+        {
+            var guid = Guid.NewGuid().ToString();
+            OpenApiService.UiOptions.SwaggerEndpoint($"/api/services/Workspace1/{guid}/v1.json", $"Service1 {guid}");
+            return Ok(new[] { "value1", "value2" });
+        }
 
         // GET api/values/5
-        [HttpGet("{workspace}/{service}")]
-        public async Task<ActionResult<string>> Get(int id)
+        [HttpGet("{workspace}/{service}/{version}.json")]
+        public async Task<ActionResult<string>> Get(string workspace, string service, string version, [FromServices] OpenApiService openApiService)
         {
-            return Ok("value");
+            return Ok(openApiService.GetServiceDefinition(workspace, service, version).Schema);
         }
 
         // POST api/values

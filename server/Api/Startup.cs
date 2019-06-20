@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Models.Config;
+using Services;
 
 namespace Api
 {
@@ -23,14 +24,19 @@ namespace Api
         }
 
         public IConfiguration Configuration { get; }
+        private IServiceCollection Services { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Services = services;
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            
+            services.AddCustomSwaggerGen();
+
+            services.AddSingleton<OpenApiService>();
 
             BindSectionToConfigObject<AwsConfig>(Configuration, services);
-            services.AddCustomSwaggerGen();
         }
         
         private static void BindSectionToConfigObject<TType>(IConfiguration configuration, IServiceCollection services)
