@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Models.OpenApi;
 using Newtonsoft.Json;
@@ -11,7 +12,7 @@ namespace Services
 {
     public class OpenApiService : ISwaggerRuntimeUpdater
     {
-        public async Task<IEnumerable<OpenApiSummary>> GetUpdatedOpenApiList()
+        public async Task<IEnumerable<OpenApiSummary>> GetUpdatedOpenApiList(CancellationToken cancellationToken)
         {
             return new List<OpenApiSummary>
             {
@@ -30,7 +31,7 @@ namespace Services
             };
         }
 
-        public async Task<OpenApiDefinition> GetOpenApiDefinition(string workspace, string service, string version)
+        public async Task<OpenApiDefinition> GetOpenApiDefinition(string workspace, string service, string version, CancellationToken cancellationToken)
         {
             return new OpenApiDefinition
             {

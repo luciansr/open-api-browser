@@ -1,20 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Models.OpenApi;
 using SwaggerRuntimeModels.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace SwaggerRuntimeHandler.Swagger
 {
-    internal class SwaggerUIRuntimeHandler 
+    public class SwaggerUIRuntimeHandler 
     {
-        public static SwaggerUIOptions UiOptions { get; set; }
-        public static string ControllerEndpointPrefix { get; set; }
+        internal static SwaggerUIOptions UiOptions { get; set; }
+        internal static string ControllerEndpointPrefix { get; set; }
+        internal static TimeSpan UpdateInterval { get; set; }
         
         
         private readonly ISwaggerRuntimeUpdater _swaggerRuntimeUpdater;
-        private static UrlDescriptor basicUrlDescriptor;
+        private static (string Url, string Name) basicUrlDescriptor;
+
+        private string GetUrl(OpenApiSummary summary) => $"/{ControllerEndpointPrefix}/{summary.Workspace}/{summary.ServiceName}/{summary.Version}.json";
 
         public SwaggerUIRuntimeHandler(ISwaggerRuntimeUpdater swaggerRuntimeUpdater)
         {
@@ -23,21 +29,30 @@ namespace SwaggerRuntimeHandler.Swagger
 
         public static void SetBasicUrlDescriptor(string url, string name)
         {
-            basicUrlDescriptor = new UrlDescriptor() {Url = url, Name = name};
+            basicUrlDescriptor = (url, name);
             UiOptions.SwaggerEndpoint(url, name);
         }
 
         public static void ResetEndpoints()
         {
             UiOptions.ConfigObject.Urls = null;
+            UiOptions.SwaggerEndpoint(basicUrlDescriptor.Url, basicUrlDescriptor.Name);
         }
 
         public static void SwaggerEndpoint(string url, string name)
         {
-            UiOptions.ConfigObject.Urls = (IEnumerable<UrlDescriptor>) new List<UrlDescriptor>(UiOptions.ConfigObject.Urls ?? Enumerable.Empty<UrlDescriptor>())
+            UiOptions.SwaggerEndpoint(url, name);
+        }
+
+        public async Task UpdateEndpoints(CancellationToken cancellationToken)
+        {
+            var updatedOpenApiList = await _swaggerRuntimeUpdater.GetUpdatedOpenApiList(cancellationToken);
+            ResetEndpoints();
+
+            foreach (var openApiSummary in updatedOpenApiList)
             {
-                new UrlDescriptor() { Url = url, Name = name }
-            };
+                SwaggerEndpoint(GetUrl(openApiSummary),$"{openApiSummary.ServiceName} - {openApiSummary.Version}");
+            }
         }
     }
 }

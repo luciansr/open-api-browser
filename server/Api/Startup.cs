@@ -36,7 +36,7 @@ namespace Api
             services.AddSingleton<OpenApiService>();
             services.AddSingleton<ISwaggerRuntimeUpdater, OpenApiService>();
             
-            services.AddSwaggerRuntimeHandler<OpenApiService>("api/prefix");
+            services.AddSwaggerRuntimeHandler<OpenApiService>("api/prefix", TimeSpan.FromMinutes(1));
 
             BindSectionToConfigObject<AwsConfig>(Configuration, services);
         }

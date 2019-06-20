@@ -1,11 +1,14 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using SwaggerRuntimeHandler.BackgroundServices;
 using SwaggerRuntimeHandler.Swagger;
 using SwaggerRuntimeModels.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -14,11 +17,14 @@ namespace SwaggerRuntimeHandler.Extensions
 {
     public static class SwaggerRuntimeExtensions
     {
-        public static IServiceCollection AddSwaggerRuntimeHandler<T>(this IServiceCollection services, string swaggerControllerPrefix)
+        public static IServiceCollection AddSwaggerRuntimeHandler<T>(this IServiceCollection services, string swaggerControllerPrefix, TimeSpan updateInterval)
         where T: ISwaggerRuntimeUpdater
         {
-            services.AddSingleton<SwaggerUIRuntimeHandler>();
             SwaggerUIRuntimeHandler.ControllerEndpointPrefix = swaggerControllerPrefix;
+            SwaggerUIRuntimeHandler.UpdateInterval = updateInterval;
+            
+            services.AddSingleton<SwaggerUIRuntimeHandler>();
+            services.AddHostedService<SwaggerUpdaterBackgroundService>();
             return services;
         }
         
@@ -27,23 +33,26 @@ namespace SwaggerRuntimeHandler.Extensions
         {
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint(url, action);
                 setupAction(c);
                 SwaggerUIRuntimeHandler.UiOptions = c;
-                
-                c.SwaggerEndpoint($"/{SwaggerUIRuntimeHandler.ControllerEndpointPrefix}/Workspace1/Service1/v1.json", $"Service1 s");
+                SwaggerUIRuntimeHandler.SetBasicUrlDescriptor(url, action);
             });
 
             app.UseRouter(r =>
             {
                 r.MapGet(SwaggerUIRuntimeHandler.ControllerEndpointPrefix + "/{workspace}/{service}/{version}.json", async (request, response, routeData) =>
                 {
-                    var swaggerRuntimeUpdater = (ISwaggerRuntimeUpdater)r.ServiceProvider.GetService(typeof(ISwaggerRuntimeUpdater));
-                    var definition =  await swaggerRuntimeUpdater.GetOpenApiDefinition(
-                        routeData.Values["workspace"] as string, 
-                        routeData.Values["service"] as string, 
-                        routeData.Values["version"] as string);
-                    await response.WriteAsync(definition.Schema.ToString());
+                    using (var sourceToken = new CancellationTokenSource(SwaggerUIRuntimeHandler.UpdateInterval/1.8))
+                    {
+                        var swaggerRuntimeUpdater = (ISwaggerRuntimeUpdater)r.ServiceProvider.GetService(typeof(ISwaggerRuntimeUpdater));
+                        var definition =  await swaggerRuntimeUpdater.GetOpenApiDefinition(
+                            routeData.Values["workspace"] as string, 
+                            routeData.Values["service"] as string, 
+                            routeData.Values["version"] as string,
+                            sourceToken.Token);
+                        
+                        await response.WriteAsync(definition.Schema.ToString(), sourceToken.Token);
+                    }
                 });
             });
 
