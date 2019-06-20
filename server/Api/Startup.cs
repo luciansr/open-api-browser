@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Api.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -27,8 +28,9 @@ namespace Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
+
             BindSectionToConfigObject<AwsConfig>(Configuration, services);
+            services.AddCustomSwaggerGen();
         }
         
         private static void BindSectionToConfigObject<TType>(IConfiguration configuration, IServiceCollection services)
@@ -52,6 +54,7 @@ namespace Api
                 app.UseHsts();
             }
 
+            app.UseCustomSwagger();
             app.UseHttpsRedirection();
             app.UseMvc();
         }
