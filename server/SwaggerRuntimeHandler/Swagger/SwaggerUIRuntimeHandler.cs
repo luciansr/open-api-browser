@@ -27,24 +27,24 @@ namespace SwaggerRuntimeHandler.Swagger
             _swaggerRuntimeUpdater = swaggerRuntimeUpdater;
         }
 
-        public static void SetBasicUrlDescriptor(string url, string name)
+        internal static void SetBasicUrlDescriptor(string url, string name)
         {
             basicUrlDescriptor = (url, name);
             UiOptions.SwaggerEndpoint(url, name);
         }
 
-        public static void ResetEndpoints()
+        private static void ResetEndpoints()
         {
             UiOptions.ConfigObject.Urls = null;
             UiOptions.SwaggerEndpoint(basicUrlDescriptor.Url, basicUrlDescriptor.Name);
         }
 
-        public static void SwaggerEndpoint(string url, string name)
+        private static void SwaggerEndpoint(string url, string name)
         {
             UiOptions.SwaggerEndpoint(url, name);
         }
 
-        public async Task UpdateEndpoints(CancellationToken cancellationToken)
+        internal async Task UpdateEndpoints(CancellationToken cancellationToken)
         {
             var updatedOpenApiList = await _swaggerRuntimeUpdater.GetUpdatedOpenApiList(cancellationToken);
             ResetEndpoints();
