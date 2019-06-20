@@ -38,14 +38,11 @@ namespace SwaggerRuntimeHandler.Extensions
             {
                 r.MapGet(SwaggerUIRuntimeHandler.ControllerEndpointPrefix + "/{workspace}/{service}/{version}.json", async (request, response, routeData) =>
                 {
-                    
-                    var workspace = routeData.Values["workspace"] as string;
-                    var service = routeData.Values["service"] as string;
-                    var version = routeData.Values["version"] as string;
-                    
-                    ISwaggerRuntimeUpdater swaggerRuntimeUpdater = (ISwaggerRuntimeUpdater)r.ServiceProvider.GetService(typeof(ISwaggerRuntimeUpdater));
-                    var definition =  await swaggerRuntimeUpdater.GetOpenApiDefinition(workspace, service, version);
-                    response.ContentType = "application/json";
+                    var swaggerRuntimeUpdater = (ISwaggerRuntimeUpdater)r.ServiceProvider.GetService(typeof(ISwaggerRuntimeUpdater));
+                    var definition =  await swaggerRuntimeUpdater.GetOpenApiDefinition(
+                        routeData.Values["workspace"] as string, 
+                        routeData.Values["service"] as string, 
+                        routeData.Values["version"] as string);
                     await response.WriteAsync(definition.Schema.ToString());
                 });
             });
