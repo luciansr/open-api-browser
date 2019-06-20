@@ -22,6 +22,7 @@
     <ProjectReference Include="..\Services\Services.csproj" />
     <ProjectReference Include="..\Models\Models.csproj" />
     <ProjectReference Include="..\Clients\Clients.csproj" />
+    <ProjectReference Include="..\SwaggerRuntimeHandler\SwaggerRuntimeHandler.csproj" />
   </ItemGroup>
 
 </Project>

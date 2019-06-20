@@ -1,24 +1,17 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 using Models.OpenApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Swashbuckle.AspNetCore.SwaggerUI;
+using SwaggerRuntimeModels.Swagger;
 
 namespace Services
 {
-    public class OpenApiService
+    public class OpenApiService : ISwaggerRuntimeUpdater
     {
-        public static SwaggerUIOptions UiOptions;
-        public OpenApiDefinition GetServiceDefinition(string workspace, string service, string version)
-        {
-            return new OpenApiDefinition
-            {
-                Schema = JObject.Parse(File.ReadAllText(@"/Users/lucian/temp/swagger.json"))
-            };
-        }
-
-        public List<OpenApiSummary> GetServices()
+        public async Task<IEnumerable<OpenApiSummary>> GetUpdatedOpenApiList()
         {
             return new List<OpenApiSummary>
             {
@@ -34,6 +27,14 @@ namespace Services
                     ServiceName = "TestService 2",
                     Workspace = "MyWorkspace"
                 }
+            };
+        }
+
+        public async Task<OpenApiDefinition> GetOpenApiDefinition(string workspace, string service, string version)
+        {
+            return new OpenApiDefinition
+            {
+                Schema = JObject.Parse(File.ReadAllText(@"/Users/lucian/temp/swagger.json"))
             };
         }
     }

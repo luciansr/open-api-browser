@@ -5,14 +5,13 @@ using System.Threading.Tasks;
 using Api.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Models.Config;
 using Services;
+using SwaggerRuntimeHandler.Extensions;
+using SwaggerRuntimeModels.Swagger;
 
 namespace Api
 {
@@ -35,6 +34,9 @@ namespace Api
             services.AddCustomSwaggerGen();
 
             services.AddSingleton<OpenApiService>();
+            services.AddSingleton<ISwaggerRuntimeUpdater, OpenApiService>();
+            
+            services.AddSwaggerRuntimeHandler<OpenApiService>("api/prefix");
 
             BindSectionToConfigObject<AwsConfig>(Configuration, services);
         }

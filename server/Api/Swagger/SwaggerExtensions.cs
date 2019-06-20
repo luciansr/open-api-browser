@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using Models.OpenApi;
-using Services;
-using Swashbuckle.AspNetCore.SwaggerUI;
+using SwaggerRuntimeHandler.Extensions;
 
 namespace Api.Swagger
 {
@@ -55,13 +52,8 @@ namespace Api.Swagger
                 c.RouteTemplate = $"{SwaggerPrefix}/swagger/{{documentName}}/swagger.json";
             });
 
-            app.UseSwaggerUI(c =>
+            app.UseSwaggerUIWithRuntimeHandler($"/{SwaggerPrefix}/swagger/{Version}/swagger.json", $"{AppName}", c =>
             {
-                c.SwaggerEndpoint($"/{SwaggerPrefix}/swagger/{Version}/swagger.json", $"{AppName}");
-                c.SwaggerEndpoint($"/api/services/Workspace1/Service1/v1.json", $"Service1");
-
-                OpenApiService.UiOptions = c;
-                
                 c.RoutePrefix = $"{SwaggerPrefix}/swagger";
             });
 

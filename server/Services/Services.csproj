@@ -3,16 +3,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Clients\Clients.csproj" />
     <ProjectReference Include="..\Models\Models.csproj" />
+    <ProjectReference Include="..\SwaggerRuntimeModels\SwaggerRuntimeModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Swashbuckle.AspNetCore.SwaggerUI, Version=5.0.0.0, Culture=neutral, PublicKeyToken=4232c99127b3c254">
-      <HintPath>..\..\..\..\.nuget\packages\swashbuckle.aspnetcore.swaggerui\5.0.0-rc2\lib\netstandard2.0\Swashbuckle.AspNetCore.SwaggerUI.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <PropertyGroup>
