@@ -5,6 +5,16 @@
     "description": "Open Api Browser",
     "version": "v1"
   },
+  "servers": [
+    {
+      "url": "",
+      "description": "Local"
+    },
+    {
+      "url": "http://www.google.com",
+      "description": "Google"
+    }
+  ],
   "paths": {
     "/api/Services": {
       "get": {
