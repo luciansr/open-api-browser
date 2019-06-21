@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Logging;
 using Models.OpenApi;
 using SwaggerRuntimeModels.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;

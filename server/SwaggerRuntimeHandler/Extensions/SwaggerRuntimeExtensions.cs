@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SwaggerRuntimeHandler.BackgroundServices;
 using SwaggerRuntimeHandler.Swagger;
 using SwaggerRuntimeModels.Swagger;
@@ -17,12 +19,13 @@ namespace SwaggerRuntimeHandler.Extensions
 {
     public static class SwaggerRuntimeExtensions
     {
-        public static IServiceCollection AddSwaggerRuntimeHandler<T>(this IServiceCollection services, string swaggerControllerPrefix, TimeSpan updateInterval)
-        where T: ISwaggerRuntimeUpdater
+        public static IServiceCollection AddSwaggerRuntimeHandler<TRuntimeUpdater>(this IServiceCollection services, string swaggerControllerPrefix, TimeSpan updateInterval)
+        where TRuntimeUpdater : class, ISwaggerRuntimeUpdater
         {
             SwaggerUIRuntimeHandler.ControllerEndpointPrefix = swaggerControllerPrefix;
             SwaggerUIRuntimeHandler.UpdateInterval = updateInterval;
-            
+
+            services.AddSingleton<ISwaggerRuntimeUpdater, TRuntimeUpdater>();
             services.AddSingleton<SwaggerUIRuntimeHandler>();
             services.AddHostedService<SwaggerUpdaterBackgroundService>();
             return services;

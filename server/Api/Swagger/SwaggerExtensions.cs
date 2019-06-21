@@ -4,18 +4,18 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Services.OpenApi;
 using SwaggerRuntimeHandler.Extensions;
 
 namespace Api.Swagger
 {
     public static class SwaggerExtensions
     {
-        private const string SwaggerPrefix = "api";
         private const string AppName = "Open Api Browser";
         private const string Version = "v1";
         
         public static IServiceCollection AddCustomSwaggerGen(
-            this IServiceCollection services)
+            this IServiceCollection services, string swaggerPrefix)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof (services));
@@ -36,12 +36,14 @@ namespace Api.Swagger
                 c.IncludeXmlComments(xmlPath);
                 c.OperationFilter<GlobalParameters>();
             });
+            
+            services.AddSwaggerRuntimeHandler<OpenApiUpdater>(swaggerPrefix, TimeSpan.FromMinutes(1));
 
             return services;
         }
 
         public static IApplicationBuilder UseCustomSwagger(
-            this IApplicationBuilder app)
+            this IApplicationBuilder app, string swaggerPrefix)
         {
             if (app == null)
                 throw new ArgumentNullException(nameof (app));
@@ -49,12 +51,12 @@ namespace Api.Swagger
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger(c =>
             {
-                c.RouteTemplate = $"{SwaggerPrefix}/swagger/{{documentName}}/swagger.json";
+                c.RouteTemplate = $"{swaggerPrefix}/swagger/{{documentName}}/swagger.json";
             });
 
-            app.UseSwaggerUIWithRuntimeHandler($"/{SwaggerPrefix}/swagger/{Version}/swagger.json", $"{AppName}", c =>
+            app.UseSwaggerUIWithRuntimeHandler($"/{swaggerPrefix}/swagger/{Version}/swagger.json", $"{AppName}", c =>
             {
-                c.RoutePrefix = $"{SwaggerPrefix}/swagger";
+                c.RoutePrefix = $"{swaggerPrefix}/swagger";
             });
 
             return app;

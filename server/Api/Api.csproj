@@ -25,4 +25,11 @@
     <ProjectReference Include="..\SwaggerRuntimeHandler\SwaggerRuntimeHandler.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="TempResources\openApiExample.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
