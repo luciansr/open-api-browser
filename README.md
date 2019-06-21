@@ -4,7 +4,7 @@
 
 Just implement your own version of the `OpenApiRepository` class.
 
-## How it Works? 
+## How it works? 
 
 Each one minute a BackgroundService updates your Open API list using the `OpenApiUpdater` class.
 
