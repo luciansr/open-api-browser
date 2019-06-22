@@ -52,7 +52,7 @@ namespace SwaggerRuntimeHandler.Swagger
 
             foreach (var openApiSummary in updatedOpenApiList)
             {
-                SwaggerEndpoint(GetUrl(openApiSummary),$"{openApiSummary.ServiceName} - {openApiSummary.Version}");
+                SwaggerEndpoint(GetUrl(openApiSummary),$"{openApiSummary.Workspace}{openApiSummary.ServiceName}/{openApiSummary.Version}");
             }
         }
     }

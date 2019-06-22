@@ -32,6 +32,7 @@ namespace Api.Controllers
             [FromBody]OpenApiDefinition openApiDefinition,
             CancellationToken cancellationToken)
         {
+            if (workspace.Contains("/") || service.Contains("/") || version.Contains("/")) return BadRequest("The / Character is not allowed");
             await openApiRepository.SaveApiDefinition(workspace, service, version, openApiDefinition, cancellationToken);
             return Ok();
         }
