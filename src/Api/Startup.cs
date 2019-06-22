@@ -1,4 +1,6 @@
 ﻿using System;
+using Amazon.Runtime;
+using Amazon.S3;
 using Api.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +31,7 @@ namespace Api
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
             services.AddSingleton<OpenApiRepository>();
+            services.AddSingleton<IAmazonS3, AmazonS3Client>();
             
             services.AddCustomSwaggerGen("api");
 

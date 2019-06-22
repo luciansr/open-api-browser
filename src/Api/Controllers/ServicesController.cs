@@ -1,29 +1,39 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Models.OpenApi;
+using Services.OpenApi;
 
 namespace Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/services")]
     [ApiController]
     public class ServicesController : ControllerBase
     {
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetAll()
+        [HttpGet("{workspace}/{service}/{version}")]
+        public async Task<ActionResult<IEnumerable<string>>> Get(
+            [FromServices] OpenApiRepository openApiRepository, 
+            string workspace,
+            string service,
+            string version,
+            CancellationToken cancellationToken)
         {
-            return Ok(new[] { "value1", "value2" });
-        }
-        
-        [HttpGet("{workspace}")]
-        public async Task<ActionResult<IEnumerable<string>>> GetWorkspace()
-        {
-            return Ok(new[] { "value1", "value2" });
+            return Ok(await openApiRepository.GetApiDefinition(workspace, service, version, cancellationToken));
         }
 
         // POST api/values
-        [HttpPost("{workspace}/{service}")]
-        public async Task Post([FromBody] string value)
+        [HttpPost("{workspace}/{service}/{version}")]
+        public async Task<ActionResult> Post(
+            [FromServices] OpenApiRepository openApiRepository, 
+            string workspace,
+            string service,
+            string version,
+            [FromBody]OpenApiDefinition openApiDefinition,
+            CancellationToken cancellationToken)
         {
+            await openApiRepository.SaveApiDefinition(workspace, service, version, openApiDefinition, cancellationToken);
+            return Ok();
         }
     }
 }

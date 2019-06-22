@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.3.102.17" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
@@ -21,7 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Services\Services.csproj" />
     <ProjectReference Include="..\Models\Models.csproj" />
-    <ProjectReference Include="..\Clients\Clients.csproj" />
     <ProjectReference Include="..\SwaggerRuntimeHandler\SwaggerRuntimeHandler.csproj" />
   </ItemGroup>
 
