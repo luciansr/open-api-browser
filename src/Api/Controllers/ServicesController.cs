@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Models.OpenApi;
+using Newtonsoft.Json.Linq;
 using Services.OpenApi;
 
 namespace Api.Controllers
@@ -29,11 +30,11 @@ namespace Api.Controllers
             string workspace,
             string service,
             string version,
-            [FromBody]OpenApiDefinition openApiDefinition,
+            [FromBody]JObject  openApiDefinition,
             CancellationToken cancellationToken)
         {
             if (workspace.Contains("/") || service.Contains("/") || version.Contains("/")) return BadRequest("The / Character is not allowed");
-            await openApiRepository.SaveApiDefinition(workspace, service, version, openApiDefinition, cancellationToken);
+            await openApiRepository.SaveApiDefinition(workspace, service, version, new OpenApiDefinition {Schema = openApiDefinition}, cancellationToken);
             return Ok();
         }
     }

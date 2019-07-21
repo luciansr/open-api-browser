@@ -1,4 +1,5 @@
 ﻿using System;
+using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using Api.Swagger;
@@ -31,7 +32,7 @@ namespace Api
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
             services.AddSingleton<OpenApiRepository>();
-            services.AddSingleton<IAmazonS3, AmazonS3Client>();
+            services.AddSingleton<IAmazonS3, AmazonS3Client>(x => new AmazonS3Client(RegionEndpoint.USEast1));
             
             services.AddCustomSwaggerGen("api");
 
